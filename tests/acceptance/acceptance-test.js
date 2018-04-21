@@ -1,4 +1,3 @@
-import Ember from 'ember';
 import { test } from 'qunit';
 import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
 import {
@@ -10,8 +9,6 @@ import {
   assertTooltipVisible
 } from '../../tests/helpers/ember-tooltips';
 
-const { $ } = Ember;
-
 moduleForAcceptance('Acceptance | acceptance');
 
 test('all acceptance tests', function(assert) {
@@ -22,7 +19,11 @@ test('all acceptance tests', function(assert) {
   const tooltipOrPopoverSelector = '.ember-tooltip, .ember-popover';
 
   andThen(() => {
-    assert.equal($(tooltipOrPopoverSelector).length, 0, 'initially there should be 0 tooltips or popovers rendered');
+    assert.equal(
+      document.querySelectorAll(tooltipOrPopoverSelector).length,
+      0,
+      'initially there should be 0 tooltips or popovers rendered'
+    );
   });
 
   /* Begin tooltip tests */
@@ -33,7 +34,7 @@ test('all acceptance tests', function(assert) {
       selector: '.js-test-tooltip'
     };
 
-    assert.equal($tooltipTarget.length, 1, 'there should be one $tooltipTarget');
+    assert.notEqual($tooltipTarget, null, 'there should be one $tooltipTarget');
 
     assertTooltipNotRendered(assert, options);
 
@@ -58,7 +59,7 @@ test('all acceptance tests', function(assert) {
       selector: '.js-test-popover'
     };
 
-    assert.equal($popoverTarget.length, 1, 'there should be one $popoverTarget');
+    assert.notEqual($popoverTarget, null, 'there should be one $popoverTarget');
 
     assertTooltipNotRendered(assert, options);
 

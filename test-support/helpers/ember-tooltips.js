@@ -173,7 +173,7 @@ export function assertTooltipNotRendered(assert, options = {}) {
 export function assertTooltipRendered(assert, options = {}) {
   const $tooltip = getTooltipFromBody(options.selector);
 
-  assert.equal($tooltip.length, 1, 'assertTooltipRendered(): the ember-tooltip should be rendered');
+  assert.notEqual($tooltip, null, 'assertTooltipRendered(): the ember-tooltip should be rendered');
 }
 
 export function assertTooltipNotVisible(assert, options = {}) {

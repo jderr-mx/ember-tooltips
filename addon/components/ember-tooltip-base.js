@@ -431,7 +431,7 @@ export default Component.extend({
       let shownTooltipsOrPopovers = document.getElementById(`.${ANIMATION_CLASS}`);
       // let shownTooltipsOrPopovers = $(`.${ANIMATION_CLASS}`);
 
-      if (shownTooltipsOrPopovers.length) {
+      if (shownTooltipsOrPopovers !== null) {
         delay = 0;
       }
     }

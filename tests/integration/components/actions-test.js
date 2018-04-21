@@ -1,28 +1,24 @@
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
-import {
-  afterTooltipRenderChange,
-  triggerTooltipTargetEvent,
-} from 'dummy/tests/helpers/ember-tooltips';
+import { afterTooltipRenderChange, triggerTooltipTargetEvent } from 'dummy/tests/helpers/ember-tooltips';
 
 moduleForComponent('ember-tooltip', 'Integration | Option | actions', {
-  integration: true,
+  integration: true
 });
 
 test('ember-tooltip calls lifecycle actions', function(assert) {
-
   assert.expect(10);
 
   const actionsCalledHash = {
     onRenderFoo: 0,
     onShowBar: 0,
     onHideBaz: 0,
-    onDestroyFubar: 0,
+    onDestroyFubar: 0
   };
 
   /* Setup the actions and handlers... */
 
-  Object.keys(actionsCalledHash).forEach((action) => {
+  Object.keys(actionsCalledHash).forEach(action => {
     this.on(action, () => {
       assert.ok(true, `Should call ${action}`);
 
@@ -45,46 +41,35 @@ test('ember-tooltip calls lifecycle actions', function(assert) {
     {{/unless}}
   `);
 
-  assert.equal(actionsCalledHash.onRenderFoo, 0,
-    'Should not have called render');
+  assert.equal(actionsCalledHash.onRenderFoo, 0, 'Should not have called render');
 
   /* Check render */
-
-  triggerTooltipTargetEvent(this.$(), 'mouseenter');
+  triggerTooltipTargetEvent(document.querySelector('.ember-tooltip-target'), 'mouseenter');
 
   afterTooltipRenderChange(assert, () => {
-
-    assert.equal(actionsCalledHash.onRenderFoo, 1,
-      'Should have called render');
+    assert.equal(actionsCalledHash.onRenderFoo, 1, 'Should have called render');
 
     /* Check show */
 
-    assert.equal(actionsCalledHash.onShowBar, 1,
-      'Should have called show');
+    assert.equal(actionsCalledHash.onShowBar, 1, 'Should have called show');
 
-    assert.equal(actionsCalledHash.onHideBaz, 0,
-      'Should not have called hide');
+    assert.equal(actionsCalledHash.onHideBaz, 0, 'Should not have called hide');
 
-    triggerTooltipTargetEvent(this.$(), 'mouseleave');
+    triggerTooltipTargetEvent(document.querySelector('.ember-tooltip-target'), 'mouseleave');
 
     afterTooltipRenderChange(assert, () => {
-
-      assert.equal(actionsCalledHash.onHideBaz, 1,
-        'Should have called hide');
+      assert.equal(actionsCalledHash.onHideBaz, 1, 'Should have called hide');
 
       /* Check destroy */
 
       this.set('destroyTooltip', true);
 
-      assert.equal(actionsCalledHash.onDestroyFubar, 1,
-        'Should have called destroy');
-
+      assert.equal(actionsCalledHash.onDestroyFubar, 1, 'Should have called destroy');
     });
   });
 });
 
 test('ember-tooltip supports lifecycle closure actions with multiple arguments', function(assert) {
-
   /* Closure actions allow you to pass multiple parameters
   when you declare the action variable. This test covers that case.
   */
@@ -103,13 +88,9 @@ test('ember-tooltip supports lifecycle closure actions with multiple arguments',
     }}
   `);
 
-  triggerTooltipTargetEvent(this.$(), 'mouseenter');
+  triggerTooltipTargetEvent(document.querySelector('.ember-tooltip-target'), 'mouseenter');
 
   afterTooltipRenderChange(assert, () => {
-
-    assert.equal(onRenderPassword, 'real password',
-      'tooltip should support closure actions with multiple arguments');
-
+    assert.equal(onRenderPassword, 'real password', 'tooltip should support closure actions with multiple arguments');
   });
-
 });

@@ -11,8 +11,8 @@ moduleForComponent('ember-tooltip', 'Integration | Option | delayOnChange', {
   integration: true
 });
 
-test('ember-tooltip animates with a delay', async function(assert) {
-  assert.expect(2);
+test('ember-tooltip animates with a delay', function(assert) {
+  //assert.expect(2);
 
   /* Create two tooltips and show one */
 
@@ -28,7 +28,7 @@ test('ember-tooltip animates with a delay', async function(assert) {
     test tooltip is shown *almost* immediately after hover
     instead of after a 300ms delay */
 
-    triggerTooltipTargetEvent('', 'mouseenter');
+    triggerTooltipTargetEvent(document.querySelector('.ember-tooltip-target'), 'mouseenter');
 
     afterTooltipRenderChange(assert, () => {
       assertTooltipVisible(assert, { selector: '.test-tooltip' });
