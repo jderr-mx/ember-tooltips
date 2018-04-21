@@ -7,7 +7,7 @@ import {
   assertTooltipRendered,
   assertTooltipNotVisible,
   triggerTooltipTargetEvent,
-  assertTooltipVisible,
+  assertTooltipVisible
 } from '../../tests/helpers/ember-tooltips';
 
 const { $ } = Ember;
@@ -15,7 +15,6 @@ const { $ } = Ember;
 moduleForAcceptance('Acceptance | acceptance');
 
 test('all acceptance tests', function(assert) {
-
   assert.expect(12);
 
   visit('/acceptance');
@@ -23,17 +22,15 @@ test('all acceptance tests', function(assert) {
   const tooltipOrPopoverSelector = '.ember-tooltip, .ember-popover';
 
   andThen(() => {
-    assert.equal($(tooltipOrPopoverSelector).length, 0,
-        'initially there should be 0 tooltips or popovers rendered');
+    assert.equal($(tooltipOrPopoverSelector).length, 0, 'initially there should be 0 tooltips or popovers rendered');
   });
 
   /* Begin tooltip tests */
 
   andThen(() => {
-
-    const $tooltipTarget = $('.js-test-tooltip-target');
+    const $tooltipTarget = document.querySelector('.js-test-tooltip-target');
     const options = {
-      selector: '.js-test-tooltip',
+      selector: '.js-test-tooltip'
     };
 
     assert.equal($tooltipTarget.length, 1, 'there should be one $tooltipTarget');
@@ -51,16 +48,14 @@ test('all acceptance tests', function(assert) {
     afterTooltipRenderChange(assert, () => {
       assertTooltipNotVisible(assert, options);
     }); // Default hideDelay = 250
-
   });
 
   /* Begin popover tests */
 
   andThen(() => {
-
-    const $popoverTarget = $('.js-test-popover-target');
+    const $popoverTarget = document.querySelector('.js-test-popover-target');
     const options = {
-      selector: '.js-test-popover',
+      selector: '.js-test-popover'
     };
 
     assert.equal($popoverTarget.length, 1, 'there should be one $popoverTarget');
@@ -75,15 +70,16 @@ test('all acceptance tests', function(assert) {
 
     triggerTooltipTargetEvent($popoverTarget, 'mouseleave');
 
-    afterTooltipRenderChange(assert, () => {
-      assertTooltipNotVisible(assert, options);
-    }, 500); // Default hideDelay = 250
-
+    afterTooltipRenderChange(
+      assert,
+      () => {
+        assertTooltipNotVisible(assert, options);
+      },
+      500
+    ); // Default hideDelay = 250
   });
 
   andThen(() => {
-    assert.equal($(tooltipOrPopoverSelector).length, 2,
-        'There should only be 2 tooltips or popovers rendered');
+    assert.equal($(tooltipOrPopoverSelector).length, 2, 'There should only be 2 tooltips or popovers rendered');
   });
-
 });

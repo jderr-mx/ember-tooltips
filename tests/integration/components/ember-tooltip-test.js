@@ -6,15 +6,14 @@ import {
   assertTooltipRendered,
   assertTooltipNotRendered,
   findTooltipTarget,
-  triggerTooltipTargetEvent,
+  triggerTooltipTargetEvent
 } from 'dummy/tests/helpers/ember-tooltips';
 
 moduleForComponent('ember-tooltip', 'Integration | Component | ember-tooltip', {
-  integration: true,
+  integration: true
 });
 
 test('ember-tooltip renders', function(assert) {
-
   assert.expect(3);
 
   this.render(hbs`
@@ -28,18 +27,15 @@ test('ember-tooltip renders', function(assert) {
   triggerTooltipTargetEvent(this.$(), 'mouseenter');
 
   afterTooltipRenderChange(assert, () => {
-
     assertTooltipRendered(assert);
 
     assertTooltipContent(assert, {
-      contentString: 'template block text',
+      contentString: 'template block text'
     });
   });
-
 });
 
 test('ember-tooltip has the proper aria-describedby tag', function(assert) {
-
   assert.expect(2);
 
   this.render(hbs`
@@ -53,21 +49,20 @@ test('ember-tooltip has the proper aria-describedby tag', function(assert) {
   `);
 
   triggerTooltipTargetEvent(this.$(), 'mouseenter', {
-    selector: '.target',
+    selector: '.target'
   });
 
   afterTooltipRenderChange(assert, () => {
     const $tooltipTarget = findTooltipTarget();
-    const describedBy = $tooltipTarget.attr('aria-describedby');
+    const describedBy = $tooltipTarget.getAttribute('aria-describedby');
 
     /* Whatever the target is 'described by' should be a tooltip with our expected content from the template above */
 
     assertTooltipContent(assert, {
       selector: `#${describedBy}`,
-      contentString: 'Some info in a tooltip.',
+      contentString: 'Some info in a tooltip.'
     });
 
     assert.equal(describedBy.indexOf('#'), '-1');
   });
-
 });

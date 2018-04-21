@@ -3,15 +3,7 @@
 import Ember from 'ember';
 import layout from '../templates/components/ember-tooltip-base';
 
-const {
-  $,
-  computed,
-  getOwner,
-  run,
-  warn,
-  Component,
-  RSVP,
-} = Ember;
+const { computed, getOwner, run, warn, Component, RSVP } = Ember;
 
 const ANIMATION_CLASS = 'ember-tooltip-show';
 
@@ -66,7 +58,7 @@ export default Component.extend({
   effect: 'slide', // Options: fade, slide, none // TODO - make slide work
   enableFlip: true, // TODO - document
   event: 'hover', // Options: hover, click, focus, none
-  tooltipClassName: 'ember-tooltip', /* Custom classes */
+  tooltipClassName: 'ember-tooltip' /* Custom classes */,
   isShown: false,
   text: null,
   side: 'top',
@@ -85,7 +77,7 @@ export default Component.extend({
   tooltipElementNotRendered: computed.not('_tooltipElementRendered'),
 
   hideOn: computed('event', function() {
-    const event  = this.get('event');
+    const event = this.get('event');
 
     let hideOn;
 
@@ -108,7 +100,7 @@ export default Component.extend({
   }),
 
   showOn: computed('event', function() {
-    const event  = this.get('event');
+    const event = this.get('event');
 
     let showOn;
 
@@ -161,9 +153,7 @@ export default Component.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    this.createTooltip().then(() => {
-
-    });
+    this.createTooltip().then(() => {});
   },
 
   didUpdateAttrs() {
@@ -194,12 +184,8 @@ export default Component.extend({
 
     /* Remove event listeners used to show and hide the tooltip */
 
-    _tooltipEvents.forEach((tooltipEvent) => {
-      const {
-        callback,
-        target,
-        eventName,
-      } = tooltipEvent;
+    _tooltipEvents.forEach(tooltipEvent => {
+      const { callback, target, eventName } = tooltipEvent;
 
       run(() => {
         target.removeEventListener(eventName, callback);
@@ -215,12 +201,9 @@ export default Component.extend({
     this.addTooltipTargetEventListeners();
   },
 
-  addTooltipBaseEventListeners() {
-
-  },
+  addTooltipBaseEventListeners() {},
 
   addTooltipTargetEventListeners() {
-
     /* Setup event handling to hide and show the tooltip */
 
     const event = this.get('event');
@@ -242,7 +225,6 @@ export default Component.extend({
         this.toggle();
       });
     } else {
-
       /* Else, add the show and hide events individually */
 
       if (showOn !== 'none') {
@@ -262,7 +244,6 @@ export default Component.extend({
     for accessibility */
 
     if (event !== 'focus') {
-
       /* If the event is click, we don't want the
       click to also trigger focusin */
 
@@ -277,23 +258,25 @@ export default Component.extend({
       });
     }
 
-    this._addEventListener('keydown', (keyEvent) => {
+    this._addEventListener(
+      'keydown',
+      keyEvent => {
+        keyEvent.stopImmediatePropagation(); /* So this callback only fires once per keydown */
 
-      keyEvent.stopImmediatePropagation(); /* So this callback only fires once per keydown */
+        if (keyEvent.which === 27) {
+          this.hide();
 
-      if (keyEvent.which === 27) {
-        this.hide();
+          keyEvent.preventDefault();
 
-        keyEvent.preventDefault();
-
-        return false;
-      }
-    }, document);
+          return false;
+        }
+      },
+      document
+    );
   },
 
   createTooltip() {
     return new RSVP.Promise((resolve, reject) => {
-
       try {
         run(() => {
           const config = getOwner(this).resolveRegistration('config:environment');
@@ -307,7 +290,9 @@ export default Component.extend({
             placement: this.get('side'),
             title: tooltipContent,
             trigger: 'manual',
-            template: `<div class="tooltip ${tooltipClassName} ember-tooltip-effect-${this.get('effect')}" role="tooltip" style="margin-${getOppositeSide(this.get('side'))}:${this.get('spacing')}px;">
+            template: `<div class="tooltip ${tooltipClassName} ember-tooltip-effect-${this.get(
+              'effect'
+            )}" role="tooltip" style="margin-${getOppositeSide(this.get('side'))}:${this.get('spacing')}px;">
                         <div class="tooltip-arrow ember-tooltip-arrow"></div>
                         <div class="tooltip-inner" id="${this.get('wormholeId')}"></div>
                        </div>`,
@@ -315,13 +300,12 @@ export default Component.extend({
             popperOptions: {
               modifiers: {
                 flip: {
-                  enabled: this.get('enableFlip'),
-                },
+                  enabled: this.get('enableFlip')
+                }
               },
 
-              onCreate: (tooltipData) => {
+              onCreate: tooltipData => {
                 run(() => {
-
                   this.sendAction('onRender', this);
 
                   this.set('_tooltipElementRendered', true);
@@ -344,8 +328,8 @@ export default Component.extend({
 
               onUpdate: () => {
                 this.setSpacing();
-              },
-            },
+              }
+            }
           });
 
           /* Add a class to the tooltip target */
@@ -362,7 +346,7 @@ export default Component.extend({
             this.show();
           }
         });
-      } catch(error) {
+      } catch (error) {
         reject(error);
       }
     });
@@ -385,7 +369,6 @@ export default Component.extend({
   },
 
   hide() {
-
     if (this.get('isDestroying')) {
       return;
     }
@@ -399,7 +382,6 @@ export default Component.extend({
   },
 
   show() {
-
     if (this.get('isDestroying')) {
       return;
     }
@@ -426,7 +408,6 @@ export default Component.extend({
     run.cancel(this.get('_hideTimer'));
 
     if (duration) {
-
       /* Hide tooltip after specified duration */
 
       const hideTimer = run.later(this, this.hide, duration);
@@ -442,22 +423,26 @@ export default Component.extend({
     delay = cleanNumber(delay);
 
     if (!this.get('delayOnChange')) {
-
       /* If the `delayOnChange` property is set to false, we
       don't want to delay opening this tooltip/popover if there is
       already a tooltip/popover shown in the DOM. Check that here
       and adjust the delay as needed. */
 
-      let shownTooltipsOrPopovers = $(`.${ANIMATION_CLASS}`);
+      let shownTooltipsOrPopovers = document.getElementById(`.${ANIMATION_CLASS}`);
+      // let shownTooltipsOrPopovers = $(`.${ANIMATION_CLASS}`);
 
       if (shownTooltipsOrPopovers.length) {
         delay = 0;
       }
     }
 
-    const _showTimer = run.later(this, () => {
-      this._showTooltip();
-    }, delay);
+    const _showTimer = run.later(
+      this,
+      () => {
+        this._showTooltip();
+      },
+      delay
+    );
 
     this.set('_showTimer', _showTimer);
   },
@@ -472,7 +457,6 @@ export default Component.extend({
     _tooltip.popperInstance.popper.classList.remove(ANIMATION_CLASS);
 
     run.later(() => {
-
       if (this.get('isDestroying')) {
         return;
       }
@@ -486,7 +470,6 @@ export default Component.extend({
   },
 
   _showTooltip() {
-
     if (this.get('isDestroying')) {
       return;
     }
@@ -509,7 +492,6 @@ export default Component.extend({
   },
 
   toggle() {
-
     /* We don't use toggleProperty because we centralize
     logic for showing and hiding in the show() and hide()
     methods. */
@@ -529,16 +511,15 @@ export default Component.extend({
     this.get('_tooltipEvents').push({
       callback,
       target,
-      eventName,
+      eventName
     });
 
     /* Add the event listeners */
 
     run(() => {
-      target.addEventListener(eventName, (event) => {
+      target.addEventListener(eventName, event => {
         callback(event);
       });
     });
-  },
-
+  }
 });

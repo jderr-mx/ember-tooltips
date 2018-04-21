@@ -4,15 +4,14 @@ import {
   afterTooltipRenderChange,
   findTooltip,
   findTooltipTarget,
-  triggerTooltipTargetEvent,
+  triggerTooltipTargetEvent
 } from 'dummy/tests/helpers/ember-tooltips';
 
 moduleForComponent('ember-tooltip', 'Integration | Component | target', {
-  integration: true,
+  integration: true
 });
 
 test('ember-tooltip target test', function(assert) {
-
   assert.expect(4);
 
   this.render(hbs`
@@ -23,23 +22,26 @@ test('ember-tooltip target test', function(assert) {
   const expectedTarget = this.$().find('#some-target');
   const actualTarget = findTooltipTarget();
 
-  assert.ok(expectedTarget.hasClass('ember-tooltip-target'),
-      '#some-target should be the tooltip target');
+  assert.ok(expectedTarget.hasClass('ember-tooltip-target'), '#some-target should be the tooltip target');
 
-  assert.equal(expectedTarget[0], actualTarget[0],
-    'The element with ID equal to targetID should be the tooltip target');
+  assert.equal(
+    expectedTarget[0],
+    actualTarget[0],
+    'The element with ID equal to targetID should be the tooltip target'
+  );
 
   triggerTooltipTargetEvent(actualTarget, 'mouseenter');
 
   afterTooltipRenderChange(assert, () => {
     const tooltip = findTooltip();
-    const targetDescribedby = actualTarget.attr('aria-describedby');
+    const targetDescribedby = actualTarget.getAttribute('aria-describedby');
 
-    assert.ok(!!targetDescribedby,
-      'The target should have an aria-describedby attribute after the tooltip renders');
+    assert.ok(!!targetDescribedby, 'The target should have an aria-describedby attribute after the tooltip renders');
 
-    assert.equal(targetDescribedby, tooltip.attr('id'),
-      `The tooltip ID should match the target's aria-describedby attribute`);
-
+    assert.equal(
+      targetDescribedby,
+      tooltip.getAttribute('id'),
+      `The tooltip ID should match the target's aria-describedby attribute`
+    );
   });
 });

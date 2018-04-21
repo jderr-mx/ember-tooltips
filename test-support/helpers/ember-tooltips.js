@@ -1,9 +1,6 @@
 import Ember from 'ember';
 
-const {
-  $,
-  run,
-} = Ember;
+const { run } = Ember;
 
 const TOOLTIP_SELECTOR = '.ember-tooltip, .ember-popover';
 const TARGET_SELECTOR = '.ember-tooltip-target, .ember-popover-target';
@@ -55,70 +52,78 @@ function getTooltipFromBody(selector = TOOLTIP_SELECTOR) {
   // tooltips and popovers are rendered as children of <body>
   // instead of children of the $targetElement
 
-  const $body = $(document.body);
-  const $tooltip = $body.find(selector);
+  const $tooltip = document.querySelectorAll(selector);
 
   if ($tooltip.length === 0) {
     throw Error('getTooltipFromBody(): No tooltips were found.');
-  } else if (!$tooltip.hasClass('ember-tooltip') && !$tooltip.hasClass('ember-popover')) {
+  } else if (!$tooltip[0].classList.contains('ember-tooltip') && !$tooltip[0].classList.contains('ember-popover')) {
     throw Error(`getTooltipFromBody(): returned an element that is not a tooltip`);
   } else if ($tooltip.length > 1) {
-    throw Error('getTooltipFromBody(): Multiple tooltips were found. Please provide an {option.selector = ".specific-tooltip-class"}');
+    throw Error(
+      'getTooltipFromBody(): Multiple tooltips were found. Please provide an {option.selector = ".specific-tooltip-class"}'
+    );
   }
 
-  return $tooltip;
+  return $tooltip[0];
 }
 
 function getTooltipTargetFromBody(selector = TARGET_SELECTOR) {
-  const $body = $(document.body);
-  const $tooltipTarget = $body.find(selector) ;
+  const $tooltipTarget = document.querySelectorAll(selector);
 
   if ($tooltipTarget.length === 0) {
     throw Error('getTooltipTargetFromBody(): No tooltip targets were found.');
   } else if ($tooltipTarget.length > 1) {
-    throw Error('getTooltipTargetFromBody(): Multiple tooltip targets were found. Please provide an {option.targetSelector = ".specific-tooltip-target-class"}');
+    throw Error(
+      'getTooltipTargetFromBody(): Multiple tooltip targets were found. Please provide an {option.targetSelector = ".specific-tooltip-target-class"}'
+    );
   }
 
-  return $tooltipTarget;
+  return $tooltipTarget[0];
 }
 
 function getOppositeSide(side) {
   switch (side) {
-    case 'top': return 'bottom'; break;
-    case 'right': return 'left'; break;
-    case 'bottom': return 'top'; break;
-    case 'left': return 'right'; break;
+    case 'top':
+      return 'bottom';
+      break;
+    case 'right':
+      return 'left';
+      break;
+    case 'bottom':
+      return 'top';
+      break;
+    case 'left':
+      return 'right';
+      break;
   }
 }
 
 function validateSide(side, testHelper = 'assertTooltipSide') {
-  const sideIsValid = (
-    side === 'top' ||
-    side === 'right' ||
-    side === 'bottom' ||
-    side === 'left'
-  );
+  const sideIsValid = side === 'top' || side === 'right' || side === 'bottom' || side === 'left';
 
   /* We make sure the side being tested is valid. We
   use Ember.assert because assert is passed in from QUnit */
 
   if (!sideIsValid) {
-    Ember.assert(`You must pass side like ${testHelper}(assert, { side: 'top' }); Valid options for side are top, right, bottom, and left.`);
+    Ember.assert(
+      `You must pass side like ${
+        testHelper
+      }(assert, { side: 'top' }); Valid options for side are top, right, bottom, and left.`
+    );
   }
 }
 
 function getTooltipAndTargetPosition(options = {}) {
   const $target = getTooltipTargetFromBody(options.targetSelector || TARGET_SELECTOR);
-  const targetPosition = $target[0].getBoundingClientRect();
+  const targetPosition = $target.getBoundingClientRect();
   const $tooltip = getTooltipFromBody(options.selector || TOOLTIP_SELECTOR);
-  const tooltipPosition = $tooltip[0].getBoundingClientRect();
+  const tooltipPosition = $tooltip.getBoundingClientRect();
 
   return {
     targetPosition,
-    tooltipPosition,
+    tooltipPosition
   };
 }
-
 
 /* TODO(Duncan): Document */
 
@@ -137,40 +142,30 @@ export function findTooltipTarget(selector = TARGET_SELECTOR) {
 Update triggerTooltipTargetEvent() to use getTooltipTargetFromBody
 and move side into the options hash */
 
-export function triggerTooltipTargetEvent($element, type, options = {}) {
-
-  const approvedEventTypes = [
-    'mouseenter',
-    'mouseleave',
-    'click',
-    'focus',
-    'focusin',
-    'focusout',
-    'blur'
-  ];
+export function triggerTooltipTargetEvent(element, type, options = {}) {
+  const approvedEventTypes = ['mouseenter', 'mouseleave', 'click', 'focus', 'focusin', 'focusout', 'blur'];
 
   if (approvedEventTypes.indexOf(type) == -1) {
     throw Error(`only ${approvedEventTypes.join(', ')} will trigger a tooltip event. You used ${type}.`);
   }
 
   if (options.selector) {
-    $element = getTooltipTargetFromBody(options.selector);
+    element = getTooltipTargetFromBody(options.selector);
   }
 
   /* If the $tooltip is hidden then the user can't interact with it */
 
-  if ($element.attr('aria-hidden') === 'true') {
+  if (element.getAttribute('aria-hidden') === 'true') {
     return;
   }
 
   run(() => {
-    $element[0].dispatchEvent(new window.Event(type));
+    element.dispatchEvent(new window.Event(type));
   });
 }
 
 export function assertTooltipNotRendered(assert, options = {}) {
-  const $body = $(document.body);
-  const $tooltip = $body.find(options.selector || TOOLTIP_SELECTOR);
+  const $tooltip = document.querySelectorAll(options.selector || TOOLTIP_SELECTOR);
 
   assert.equal($tooltip.length, 0, 'assertTooltipNotRendered(): the ember-tooltip should not be rendered');
 }
@@ -183,21 +178,24 @@ export function assertTooltipRendered(assert, options = {}) {
 
 export function assertTooltipNotVisible(assert, options = {}) {
   const $tooltip = getTooltipFromBody(options.selector);
-  const ariaHidden = $tooltip.attr('aria-hidden');
+  const ariaHidden = $tooltip.getAttribute('aria-hidden');
 
-  assert.ok(ariaHidden === 'true',
+  assert.ok(
+    ariaHidden === 'true',
     `assertTooltipNotVisible(): the ember-tooltip shouldn't be visible:
-      aria-hidden = ${ariaHidden}`);
+      aria-hidden = ${ariaHidden}`
+  );
 }
 
 export function assertTooltipVisible(assert, options = {}) {
   const $tooltip = getTooltipFromBody(options.selector);
-  const ariaHidden = $tooltip.attr('aria-hidden');
+  const ariaHidden = $tooltip.getAttribute('aria-hidden');
 
-  assert.ok(ariaHidden === 'false',
+  assert.ok(
+    ariaHidden === 'false',
     `assertTooltipVisible(): the ember-tooltip should be visible:
-      aria-hidden = ${ariaHidden}`);
-
+      aria-hidden = ${ariaHidden}`
+  );
 }
 
 export function assertTooltipSide(assert, options = {}) {
@@ -212,8 +210,7 @@ export function assertTooltipSide(assert, options = {}) {
   target's position is greater than the tooltip's
   position. */
 
-  assert.ok(expectedGreaterDistance > expectedLesserDistance,
-    `Tooltip should be on the ${side} side of the target`);
+  assert.ok(expectedGreaterDistance > expectedLesserDistance, `Tooltip should be on the ${side} side of the target`);
 }
 
 export function assertTooltipSpacing(assert, options) {
@@ -236,10 +233,14 @@ export function assertTooltipSpacing(assert, options) {
   const isSideCorrect = expectedGreaterDistance > expectedLesserDistance;
   const isSpacingCorrect = actualSpacing === spacing;
 
-  assert.ok(isSideCorrect && isSpacingCorrect,
+  assert.ok(
+    isSideCorrect && isSpacingCorrect,
     `assertTooltipSpacing(): the tooltip should be in the correct position:
         - Tooltip should be on the ${side} side of the target: ${isSideCorrect}.
-        - On the ${side} side of the target, the tooltip should be ${spacing}px from the target but it was ${actualSpacing}px`);
+        - On the ${side} side of the target, the tooltip should be ${spacing}px from the target but it was ${
+      actualSpacing
+    }px`
+  );
 }
 
 export function assertTooltipContent(assert, options = {}) {
@@ -250,13 +251,16 @@ export function assertTooltipContent(assert, options = {}) {
   }
 
   const $tooltip = getTooltipFromBody(options.selector);
-  const tooltipContent = $tooltip.text().trim();
+  const tooltipContent = $tooltip.textContent.trim();
 
-  assert.equal(tooltipContent, contentString, `Content of tooltip (${tooltipContent}) matched expected (${contentString})`);
+  assert.equal(
+    tooltipContent,
+    contentString,
+    `Content of tooltip (${tooltipContent}) matched expected (${contentString})`
+  );
 }
 
 export function afterTooltipRenderChange(assert, callback, delay = 0) {
-
   if (!assert.async) {
     console.warn('Did you forget to pass assert as the first param to afterTooltipRenderChange?');
   }
@@ -267,5 +271,4 @@ export function afterTooltipRenderChange(assert, callback, delay = 0) {
     callback();
     done();
   }, delay);
-
 }
